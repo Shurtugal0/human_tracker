@@ -20,55 +20,48 @@ capture = cv2.VideoCapture(int(args.input))
 video_count = 0
 video = []
 
-import os
-for video_name in os.listdir('./videos'):
-    track = tracking.track.send('../videos/' + video_name)
+while True:
 
-    with open('./tracks' + '/' + str(video_count) + ".json", "w") as outfile:
-        json.dump(track, outfile)
-
-# while True:
-
-#     ret, frame = capture.read()
-#     h, w = frame.shape[0],frame.shape[1]
-#     if frame is None:
-#         break
+    ret, frame = capture.read()
+    h, w = frame.shape[0],frame.shape[1]
+    if frame is None:
+        break
     
-#     fgMask = backSub.apply(frame)
+    fgMask = backSub.apply(frame)
     
     
-#     cv2.imshow('Frame', frame)
-#     cv2.imshow('FG Mask', fgMask)
+    cv2.imshow('Frame', frame)
+    cv2.imshow('FG Mask', fgMask)
 
 
-#     cnts = cv2.findContours(fgMask.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-#     cnts = imutils.grab_contours(cnts)
+    cnts = cv2.findContours(fgMask.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    cnts = imutils.grab_contours(cnts)
 
 
-#     movement = False
+    movement = False
 
-#     for c in cnts:
-#         if cv2.contourArea(c) > int(args.min_contour):
-#             video.append(frame)
-#             movement = True
-#             break
+    for c in cnts:
+        if cv2.contourArea(c) > int(args.min_contour):
+            video.append(frame)
+            movement = True
+            break
 
-#     if not movement:
-#         if len(video) > int(args.min_length):
-#             out = cv2.VideoWriter('./videos/' + str(video_count) + '.mp4',
-#                           cv2.VideoWriter_fourcc(*'mp4v'), 
-#                           24, (w, h))
-#             for frm in video:
-#                 out.write(frm)
-#             out.release()
-#             video_count += 1
-#             tracking.track.send('../videos/' + str(video_count) + '.mp4')
+    if not movement:
+        if len(video) > int(args.min_length):
+            out = cv2.VideoWriter('./videos/' + str(video_count) + '.mp4',
+                          cv2.VideoWriter_fourcc(*'mp4v'), 
+                          24, (w, h))
+            for frm in video:
+                out.write(frm)
+            out.release()
+            video_count += 1
+            tracking.track.send('../videos/' + str(video_count) + '.mp4')
 
-#         video = []
+        video = []
 
-#     keyboard = cv2.waitKey(30)
-#     if keyboard == 'q' or keyboard == 27:
-#         break
+    keyboard = cv2.waitKey(30)
+    if keyboard == 'q' or keyboard == 27:
+        break
 
 
 
